@@ -52,9 +52,12 @@ chekapmode1="$(nmcli -p -f general,wifi-properties device show $ifacename | sed 
 # chekapmode1="(iw $(iw dev | awk "/$ifacename/{print prev} {prev=\$0}" | sed 's/[[:punct:]]//g') info | sed '/* AP/!d;/\* AP.*.[[:digit:]]/d;/^[[:space:]]*$/d' | sort -u | wc -l)"
 if [ "$chekapmode1" = "0" ]; then
   echo "ERROR! The specified interface not supported AP mode! ($ifacename)"
+  echo " "
   echo "(using another interface, or virtualization one supported iface)"
   # echo "check iface command -> iw \$(iw dev | awk '/<iface>/{print prev} {prev=\$0}'"" | sed 's/[[:punct:]]//g') info | sed ""'"'/* AP/!d;/\* AP.*.[[:digit:]]/d'"'"
-  echo "check iface command -> nmcli -p -f general,wifi-properties device show <iface> | sed '/WIFI."'*.AP/!d;s/  */ /g'"'"
+  echo " "
+  echo "Check iface command -> nmcli -p -f general,wifi-properties device show <iface> | sed '/WIFI."'*.AP/!d;s/  */ /g'"'"
+  echo " "
   exit
 else
   echo -n ""
@@ -81,20 +84,21 @@ fi
 
 checkdoc3="$(sed "/$ifacename/!d" /etc/NetworkManager/system-connections/*.nmconnection | sort -u | wc -l)"
 if [ "$checkdoc3" = "1" ]; then
-  echo " "
   echo "Warning! The specified interface included in several network settings! ($ifacename)"
   echo " "
   read -p "Continue process (y)? or Check NetworkManager and delete undesired settings? (y/n) " nmsetting1
   echo " "
   if [ "$nmsetting1" = "n" ]; then
     echo "(opened nm-connection-editor and exit)"
+    # open /etc/NetworkManager/system-connections/
+    thunar /etc/NetworkManager/system-connections/
     nm-connection-editor
     exit
   else
     echo -n ""
+  fi
 else
   echo -n ""
-  fi
 fi
 
 
